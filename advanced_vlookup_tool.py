@@ -34,6 +34,10 @@ class AdvancedVLOOKUPTool(QMainWindow):
 
         self.current_version = self.load_version()  # 从 version.ini 读取当前版本
 
+        self.update_url = "https://api.github.com/repos/kilolonion/kilon/releases/latest"
+        self.updater = Updater(self.current_version, self.update_url)
+        self.setup_updater()  # 设置更新器
+
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.main_layout = QHBoxLayout(self.central_widget)
@@ -69,7 +73,7 @@ class AdvancedVLOOKUPTool(QMainWindow):
             if welcome.exec() == QDialog.DialogCode.Accepted and welcome.dont_show_again.isChecked():
                 self.settings.setValue("hide_welcome", True)  # 显示欢迎对话框
 
-        self.update_url = "https://api.github.com/repos/yourusername/AdvancedVLOOKUPTool/releases/latest"
+        self.update_url = "https://api.github.com/repos/kilolonion/kilon/releases/latest"
         self.updater = Updater(self.current_version, self.update_url)
         self.setup_updater()  # 设置更新器
 
@@ -676,7 +680,11 @@ class AdvancedVLOOKUPTool(QMainWindow):
                                        "本工具旨在提供高效的VLOOKUP功能，支持多表查找和数据匹配。")
 
     def check_for_updates(self):
-        self.updater.check_for_updates()
+        try:
+            self.updater.check_for_updates()
+        except Exception as e:
+            self.log(f"检查更新时发生错误: {str(e)}", logging.ERROR)
+            QMessageBox.warning(self, "更新检查失败", f"检查更新时发生错误: {str(e)}")
 
     def update_application(self, version):
         QMessageBox.information(self, "更新", f"正在更新到版本 {version}...")
